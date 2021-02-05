@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    parameters{
+        string(name: 'VERSION', defaultValue: '', description: 'Version to deploy on prod')
+        choice(name: 'VERSION', choices: ['1.1', '1.2', '1.3'], description: 'whatever u like')
+        booleanParam(name: 'executeTests', defaultValue: true , description: 'whatever u like')
+    }
+    stages {
+            stage('Checkout'){
+                steps { 
+                    echo 'Checking out the GitHub repo'
+                    git credentialsId: 'f7844984-2106-4044-bccb-b6666e689c26', url: 'https://github.com/gsk25794/jenkinsfile.git'
+                    
+                }
+            }
+
+            stage('Build'){
+                steps { 
+                    echo 'Building the pulled project'
+                }
+            }
+            
+            stage('Unit-Test'){
+                when{
+                    expression{
+                        params.executeTests == true //when executeTests parameter is set to true then next step will execute otherwise not
+                    }
+                }
+                steps { 
+                    echo 'Testing the Application'
+                }
+            }
+            
+            stage('Quality'){
+                steps { 
+                    echo 'Testing the Quality of application'
+                }
+            }
+            
+            stage('Deploy'){
+                steps { 
+                    echo "Deploying the pulled project version ${params.VERSION}"       
+            }
+        }
+    }
+}

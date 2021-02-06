@@ -1,5 +1,4 @@
 def gv
-
 pipeline {
     agent any
     parameters{
@@ -37,17 +36,11 @@ pipeline {
                 }
             }
             
-            stage('Quality'){
-                steps { 
-                    echo 'Testing the Quality of application'
-                }
-            }
-            
             stage('Deploy'){
                 steps { 
                     script {
-                        gv.buildApp()
-                    }
+                        gv.deployApp()
+                   }
             }
         }
     }

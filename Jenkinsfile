@@ -1,3 +1,5 @@
+def gv
+
 pipeline {
     agent any
     parameters{
@@ -6,28 +8,32 @@ pipeline {
         booleanParam(name: 'executeTests', defaultValue: true , description: 'whatever u like')
     }
     stages {
-            stage('Checkout'){
-                steps { 
-                    echo 'Checking out the GitHub repo'
-                    git credentialsId: 'f7844984-2106-4044-bccb-b6666e689c26', url: 'https://github.com/gsk25794/jenkinsfile.git'
-                    
+            stage('init'){
+                steps {
+                    script{
+                        gv = load "script.groovy"
+                    } 
                 }
             }
 
             stage('Build'){
                 steps { 
-                    echo 'Building the pulled project'
+                    script {
+                        gv.buildApp()
+                    }
                 }
             }
             
             stage('Unit-Test'){
                 when{
                     expression{
-                        params.executeTests == true //when executeTests parameter is set to true then next step will execute otherwise not
+                        params.executeTests //when executeTests parameter is set to true then next step will execute otherwise not
                     }
                 }
                 steps { 
-                    echo 'Testing the Application'
+                    script {
+                        gv.testApp()
+                    }
                 }
             }
             
@@ -39,7 +45,9 @@ pipeline {
             
             stage('Deploy'){
                 steps { 
-                    echo "Deploying the pulled project version ${params.VERSION}"       
+                    script {
+                        gv.buildApp()
+                    }
             }
         }
     }
